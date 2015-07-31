@@ -1,0 +1,3 @@
+include ':adk'
+include ':demo'
+include ':library'
