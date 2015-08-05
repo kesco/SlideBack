@@ -28,7 +28,7 @@ public class SlidLayout(ctx: Context, val innerView: View) : FrameLayout(ctx) {
 
     private var scrollPercent: Float = 0f
 
-    private var listener: SlideListener? = null
+    var listener: SlideListener? = null
 
     init {
         screenWidth = getResources().getDisplayMetrics().widthPixels
@@ -87,10 +87,6 @@ public class SlidLayout(ctx: Context, val innerView: View) : FrameLayout(ctx) {
         }
     }
 
-    public fun setListener(l: SlideListener) {
-        listener = l
-    }
-
     private inner class DragCallback() : ViewDragHelper.Callback() {
         override fun tryCaptureView(child: View, pointerId: Int): Boolean {
             /* 这里做个边缘触摸判断 */
@@ -101,9 +97,7 @@ public class SlidLayout(ctx: Context, val innerView: View) : FrameLayout(ctx) {
             return Math.max(0, Math.min(left, screenWidth))
         }
 
-        override fun getViewHorizontalDragRange(child: View?): Int {
-            return screenWidth
-        }
+        override fun getViewHorizontalDragRange(child: View?): Int = screenWidth
 
         override fun onViewDragStateChanged(state: Int) {
             when (state) {

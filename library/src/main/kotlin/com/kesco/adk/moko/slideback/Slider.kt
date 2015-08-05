@@ -15,14 +15,14 @@ public object Slider {
         slideLayout.addView(screenView)
         decorView.addView(slideLayout, 0)
 
-        slideLayout.setListener(object :SlideListener {
+        slideLayout.listener = object : SlideListener {
             override fun onSlide(percent: Float) {
-                Log.d("on Slide",percent.toString())
+                Log.d("on Slide", percent.toString())
             }
 
             override fun onSlideFinish() {
                 act.finish()
             }
-        })
+        }
     }
 }
