@@ -14,7 +14,7 @@ public object Slider {
         val slideLayout: SlideLayout = SlideLayout(act, screenView)
         slideLayout.addView(screenView)
         decorView.addView(slideLayout, 0)
-        slideLayout.slideEdge = SlideEdge.LEFT
+        slideLayout.slideEdge = SlideEdge.RIGHT
         slideLayout.listener = object : SlideListener {
             override fun onSlide(percent: Float) {
                 Log.d("on Slide", percent.toString())
