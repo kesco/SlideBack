@@ -12,6 +12,10 @@ public enum class SlideEdge {
     LEFT, TOP, RIGHT, BOTTOM, NONE
 }
 
+public enum class SlideState {
+    DRAGGING, IDLE, STATE_SETTLING
+}
+
 enum class Direction {
     Horizontal, Vertical
 }
