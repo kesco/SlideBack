@@ -4,7 +4,7 @@ import android.graphics.Canvas
 import android.view.View
 
 public interface SlideListener {
-    fun onSlide(percent: Float)
+    fun onSlide(percent: Float, state: SlideState)
     fun onSlideFinish()
 }
 
@@ -13,7 +13,7 @@ public enum class SlideEdge {
 }
 
 public enum class SlideState {
-    DRAGGING, IDLE, STATE_SETTLING
+    DRAGGING, IDLE, SETTLING
 }
 
 enum class Direction {
@@ -24,8 +24,6 @@ interface SlideViewDelegate {
     fun canViewDragged(pointerId: Int): Boolean
     fun clampViewPosition(distance: Int, direct: Direction): Int
     fun decorateDraggedView(canvas: Canvas)
-    fun onDraggedViewPositionChange(left: Int, top: Int)
     fun draggedViewDestination(xvel: Float, yvel: Float): Array<Int>
-
-    fun addListener(l: SlideListener?)
+    fun draggedPercent(left: Int, top: Int): Float
 }

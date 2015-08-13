@@ -8,8 +8,8 @@ import android.view.ViewGroup
 public object Slider {
     public fun attachToScreen(act: Activity) {
         attachToScreen(act, SlideEdge.LEFT, object : SlideListener {
-            override fun onSlide(percent: Float) {
-                Log.d("on Slide", percent.toString())
+            override fun onSlide(percent: Float,state:SlideState) {
+                Log.d("on Slide", "$percent : ${state.toString()}")
             }
 
             override fun onSlideFinish() {
