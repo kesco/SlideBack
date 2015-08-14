@@ -6,9 +6,9 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/btn_simulate"
+        android:id="@+id/btn_left_slide"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btn_simulate"
-        android:layout_gravity="center"/>
+        android:layout_gravity="center"
+        android:text="@string/btn_left_slide" />
 </FrameLayout>

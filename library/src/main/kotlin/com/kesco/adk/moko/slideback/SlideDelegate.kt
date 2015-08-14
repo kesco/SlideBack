@@ -1,9 +1,9 @@
 package com.kesco.adk.moko.slideback
 
 import android.graphics.Canvas
-import android.view.View
 
 public interface SlideListener {
+    fun onSlideStart()
     fun onSlide(percent: Float, state: SlideState)
     fun onSlideFinish()
 }

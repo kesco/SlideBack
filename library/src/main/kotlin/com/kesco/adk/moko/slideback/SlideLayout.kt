@@ -92,7 +92,11 @@ public class SlideLayout(ctx: Context, val slideView: View) : FrameLayout(ctx) {
     }
 
     inner class SlideCallback() : ViewDragHelper.Callback() {
-        override fun tryCaptureView(child: View, pointerId: Int): Boolean = child.getId() == R.id.slide_view && slideDelegate.canViewDragged(pointerId)
+        override fun tryCaptureView(child: View, pointerId: Int): Boolean {
+            val ok = child.getId() == R.id.slide_view && slideDelegate.canViewDragged(pointerId)
+            if (ok) listener?.onSlideStart()
+            return ok
+        }
 
         override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int = slideDelegate.clampViewPosition(left, Direction.Horizontal)
 
