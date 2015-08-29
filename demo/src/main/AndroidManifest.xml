@@ -17,7 +17,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SlideLeftActivity"
+            android:name=".CommonSlideActivity"
             android:label="@string/title_activity_slide_left"
             android:theme="@style/AppTranslucentTheme"></activity>
     </application>

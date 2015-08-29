@@ -28,6 +28,25 @@ public object Slider {
         })
     }
 
+    public fun attachToScreen(act: Activity, edge: SlideEdge) {
+        attachToScreen(act, edge, object : SlideListener {
+            override fun onSlideStart() {
+                Log.e("on Slide", "${act.toString()} Start")
+                convertActivityToTranslucent(act)
+            }
+
+            override fun onSlide(percent: Float, state: SlideState) {
+                Log.d("on Slide", "$percent : ${state.toString()}")
+            }
+
+            override fun onSlideFinish() {
+                Log.d("on Slide", "${act.toString()} Finish")
+                act.finish()
+                act.overridePendingTransition(0, 0)
+            }
+        })
+    }
+
     public fun attachToScreen(act: Activity, edge: SlideEdge, l: SlideListener) {
         act.getWindow().setBackgroundDrawable(ColorDrawable(0))
         val decorView: ViewGroup = act.getWindow().getDecorView() as ViewGroup
@@ -107,5 +126,4 @@ private fun convertActivityToTranslucentAfterL(act: Activity) {
     } catch (t: Throwable) {
         Log.e("Slider", "Can not call the convertToTranslucent method of Activity")
     }
-
 }
