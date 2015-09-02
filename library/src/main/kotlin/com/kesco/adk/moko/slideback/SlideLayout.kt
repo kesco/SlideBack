@@ -210,14 +210,7 @@ private class RightSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper) 
         val left = draggedView.getLeft()
         val width = draggedView.getMeasuredWidth()
         val threshold = width / 2
-        val settleLeft: Int
-        if (Math.abs(xvel) > threshold) {
-            settleLeft = -width
-        } else if (xvel > 0) {
-            settleLeft = 0
-        } else {
-            settleLeft = if (Math.abs(left) > threshold) width else 0
-        }
+        val settleLeft = if ((xvel < 0 && Math.abs(xvel) > threshold) || Math.abs(left) > threshold) -width else 0
         return arrayOf(settleLeft, draggedView.getTop())
     }
 
