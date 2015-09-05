@@ -1,3 +1,3 @@
-include ':adk'
+include ':adk', ':xposed_plugin'
 include ':demo'
 include ':library'
