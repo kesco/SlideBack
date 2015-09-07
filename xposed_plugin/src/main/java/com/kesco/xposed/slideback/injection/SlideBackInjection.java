@@ -20,7 +20,18 @@ public class SlideBackInjection implements IXposedHookLoadPackage, IXposedHookZy
             return;
         }
         XposedBridge.log(lpparam.packageName + " detected!");
-        XposedHelpers.findAndHookMethod(Activity.class, "setContentView", int.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod("android.support.v7.app.AppCompatActivity", lpparam.classLoader, "setContentView", "int", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                XposedBridge.log("before AppCompatActivity setContentView");
+            }
+
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                XposedBridge.log("after AppCompatActivity setContentView");
+            }
+        });
+        XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "setContentView", "int", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 XposedBridge.log("before setContentView");
