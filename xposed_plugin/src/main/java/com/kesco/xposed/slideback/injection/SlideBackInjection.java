@@ -1,6 +1,8 @@
 package com.kesco.xposed.slideback.injection;
 
 import android.app.Activity;
+import android.content.res.XModuleResources;
+import android.content.res.XResources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -17,14 +19,24 @@ import com.kesco.adk.moko.slideback.SlidebackPackage;
 
 import org.jetbrains.annotations.NotNull;
 
+import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class SlideBackInjection implements IXposedHookLoadPackage, IXposedHookZygoteInit {
+public class SlideBackInjection implements IXposedHookZygoteInit,IXposedHookLoadPackage, IXposedHookInitPackageResources {
+
+    private static String modPath;
+
+    @Override
+    public void initZygote(StartupParam startupParam) throws Throwable {
+        modPath = startupParam.modulePath;
+    }
+
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         if (!lpparam.packageName.equals("com.kesco.demo.imsi")) {
@@ -76,7 +88,16 @@ public class SlideBackInjection implements IXposedHookLoadPackage, IXposedHookZy
     }
 
     @Override
-    public void initZygote(StartupParam suparma) throws Throwable {
-        XposedBridge.log(suparma.modulePath);
+    public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
+        if (!resparam.packageName.equals("com.kesco.demo.imsi")) {
+            return;
+        }
+        XResources res = resparam.res;
+        XModuleResources modRes = XModuleResources.createInstance(modPath, res);
+
+        res.setReplacement(com.kesco.adk.moko.slideback.R.color.start_shadow_color,modRes.fwd(com.kesco.adk.moko.slideback.R.color.start_shadow_color));
+        res.setReplacement(com.kesco.adk.moko.slideback.R.color.center_shadow_color, modRes.fwd(com.kesco.adk.moko.slideback.R.color.center_shadow_color));
+        res.setReplacement(com.kesco.adk.moko.slideback.R.color.end_shadow_color,modRes.fwd(com.kesco.adk.moko.slideback.R.color.end_shadow_color));
+        res.setReplacement(com.kesco.adk.moko.slideback.R.dimen.shadow_width,modRes.fwd(com.kesco.adk.moko.slideback.R.dimen.shadow_width));
     }
 }
