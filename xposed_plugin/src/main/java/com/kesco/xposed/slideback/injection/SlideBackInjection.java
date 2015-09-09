@@ -28,7 +28,7 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
-public class SlideBackInjection implements IXposedHookZygoteInit,IXposedHookLoadPackage, IXposedHookInitPackageResources {
+public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
 
     private static String modPath;
 
@@ -45,40 +45,16 @@ public class SlideBackInjection implements IXposedHookZygoteInit,IXposedHookLoad
         XposedHelpers.findAndHookMethod("android.support.v7.app.AppCompatActivity", lpparam.classLoader, "setContentView", "int", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                final Activity act = (Activity) param.thisObject;
-                Window win = act.getWindow();
-                ViewGroup decorView = (ViewGroup) win.getDecorView();
-                Drawable bg = decorView.getBackground();
-                act.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                decorView.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                View screenView = decorView.getChildAt(0);
-                decorView.removeViewAt(0);
-                SlideLayout slideLayout = new SlideLayout(act, screenView);
-                slideLayout.addView(screenView);
-                decorView.addView(slideLayout, 0);
-                screenView.setBackgroundDrawable(bg);
-                slideLayout.setSlideEdge(SlideEdge.LEFT);
-                slideLayout.setListener(new SlideListener() {
-                    @Override
-                    public void onSlideStart() {
-                    }
-
-                    @Override
-                    public void onSlide(float percent, @NotNull SlideState state) {
-                        XposedBridge.log(act.getClass().getSimpleName() + ": " + percent);
-                    }
-
-                    @Override
-                    public void onSlideFinish() {
-                        XposedBridge.log(act.getClass().getSimpleName() + " : Finish");
-                        act.finish();
-                        act.overridePendingTransition(0, 0);
-                    }
-                });
-                SlidebackPackage.convertActivityFromTranslucent(act);
+                attachSlideLayout((Activity) param.thisObject);
             }
         });
-        XposedHelpers.findAndHookMethod("android.support.v7.app.AppCompatActivity", lpparam.classLoader, "onPostCreate", Bundle.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "setContentView", "int", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                attachSlideLayout((Activity) param.thisObject);
+            }
+        });
+        XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "onPostCreate", Bundle.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Activity act = (Activity) param.thisObject;
@@ -94,10 +70,49 @@ public class SlideBackInjection implements IXposedHookZygoteInit,IXposedHookLoad
         }
         XResources res = resparam.res;
         XModuleResources modRes = XModuleResources.createInstance(modPath, res);
+        int resId;
 
-        res.setReplacement(com.kesco.adk.moko.slideback.R.color.start_shadow_color,modRes.fwd(com.kesco.adk.moko.slideback.R.color.start_shadow_color));
-        res.setReplacement(com.kesco.adk.moko.slideback.R.color.center_shadow_color, modRes.fwd(com.kesco.adk.moko.slideback.R.color.center_shadow_color));
-        res.setReplacement(com.kesco.adk.moko.slideback.R.color.end_shadow_color,modRes.fwd(com.kesco.adk.moko.slideback.R.color.end_shadow_color));
-        res.setReplacement(com.kesco.adk.moko.slideback.R.dimen.shadow_width,modRes.fwd(com.kesco.adk.moko.slideback.R.dimen.shadow_width));
+        resId = com.kesco.adk.moko.slideback.R.color.start_shadow_color;
+        res.setReplacement(resId, modRes.fwd(resId));
+        resId = com.kesco.adk.moko.slideback.R.color.center_shadow_color;
+        res.setReplacement(resId, modRes.fwd(resId));
+        resId = com.kesco.adk.moko.slideback.R.color.end_shadow_color;
+        res.setReplacement(resId, modRes.fwd(resId));
+        resId = com.kesco.adk.moko.slideback.R.dimen.shadow_width;
+        res.setReplacement(resId, modRes.fwd(resId));
+        resId = com.kesco.adk.moko.slideback.R.id.slide_view;
+        res.setReplacement(resId, modRes.fwd(resId));
+    }
+
+    private void attachSlideLayout(final Activity act) {
+        Window win = act.getWindow();
+        ViewGroup decorView = (ViewGroup) win.getDecorView();
+        Drawable bg = decorView.getBackground();
+        act.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        decorView.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        View screenView = decorView.getChildAt(0);
+        decorView.removeViewAt(0);
+        SlideLayout slideLayout = new SlideLayout(act, screenView);
+        slideLayout.addView(screenView);
+        decorView.addView(slideLayout, 0);
+        screenView.setBackgroundDrawable(bg);
+        slideLayout.setSlideEdge(SlideEdge.LEFT);
+        slideLayout.setListener(new SlideListener() {
+            @Override
+            public void onSlideStart() {
+            }
+
+            @Override
+            public void onSlide(float percent, @NotNull SlideState state) {
+            }
+
+            @Override
+            public void onSlideFinish() {
+                XposedBridge.log(act.getClass().getSimpleName() + " : Finish");
+                act.finish();
+                act.overridePendingTransition(0, 0);
+            }
+        });
+        SlidebackPackage.convertActivityFromTranslucent(act);
     }
 }
