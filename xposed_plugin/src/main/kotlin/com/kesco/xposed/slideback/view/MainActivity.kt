@@ -1,19 +1,27 @@
-package com.kesco.xposed.slideback
+package com.kesco.xposed.slideback.view
 
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.kesco.adk.ui.bindViewById
+import com.kesco.xposed.slideback.view.adapter.AppAdapter
+import com.kesco.xposed.slideback.R
+import com.kesco.xposed.slideback.domain.AppInfo
+import com.kesco.xposed.slideback.domain.genAppInfo
+import java.util.*
 
 public class MainActivity : AppCompatActivity() {
 
-    val rvApps:RecyclerView by bindViewById(R.id.rv_apps)
+    val rvApps: RecyclerView by bindViewById(R.id.rv_apps)
+    val fabAdd: FloatingActionButton by bindViewById(R.id.fab_add)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,27 +29,28 @@ public class MainActivity : AppCompatActivity() {
 
         rvApps.setLayoutManager(LinearLayoutManager(this))
 
-        val apps: List<ApplicationInfo> = getPackageManager().getInstalledApplications(PackageManager.GET_META_DATA)
-        Log.e("apps","${apps.size()}")
+        val packlist = getPackageManager().getInstalledPackages(PackageManager.GET_ACTIVITIES)
+        val apps = ArrayList<AppInfo>()
+        for (pack in packlist) {
+            if (pack.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0) {
+                apps.add(genAppInfo(this, pack))
+            }
+        }
+        val adapter = AppAdapter(this)
+        rvApps.setAdapter(adapter)
+        adapter.applist = apps
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         val id = item.getItemId()
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true
         }
-
         return super.onOptionsItemSelected(item)
     }
 }
