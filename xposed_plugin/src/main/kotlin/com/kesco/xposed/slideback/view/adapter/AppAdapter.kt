@@ -34,7 +34,7 @@ class AppAdapter(val ctx: Context) : RecyclerView.Adapter<AppAdapter.AppVH>() {
 
     override fun onBindViewHolder(holder: AppVH, position: Int) {
         val app = _apps.get(position)
-        holder.tvAppName.setText(app.name)
+        holder.tvAppName.text = app.name
         holder.ivAppIcon.setImageDrawable(app.icon)
     }
 

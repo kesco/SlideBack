@@ -27,9 +27,9 @@ public class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        rvApps.setLayoutManager(LinearLayoutManager(this))
+        rvApps.layoutManager = LinearLayoutManager(this)
 
-        val packlist = getPackageManager().getInstalledPackages(PackageManager.GET_ACTIVITIES)
+        val packlist = packageManager.getInstalledPackages(PackageManager.GET_ACTIVITIES)
         val apps = ArrayList<AppInfo>()
         for (pack in packlist) {
             if (pack.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0) {
@@ -37,17 +37,17 @@ public class MainActivity : AppCompatActivity() {
             }
         }
         val adapter = AppAdapter(this)
-        rvApps.setAdapter(adapter)
+        rvApps.adapter = adapter
         adapter.applist = apps
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        getMenuInflater().inflate(R.menu.menu_main, menu)
+        menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.getItemId()
+        val id = item.itemId
         if (id == R.id.action_settings) {
             return true
         }

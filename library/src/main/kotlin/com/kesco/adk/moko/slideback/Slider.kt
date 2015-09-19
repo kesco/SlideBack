@@ -48,8 +48,8 @@ public object Slider {
     }
 
     public fun attachToScreen(act: Activity, edge: SlideEdge, l: SlideListener) {
-        act.getWindow().setBackgroundDrawable(ColorDrawable(0))
-        val decorView: ViewGroup = act.getWindow().getDecorView() as ViewGroup
+        act.window.setBackgroundDrawable(ColorDrawable(0))
+        val decorView: ViewGroup = act.window.decorView as ViewGroup
         decorView.setBackgroundDrawable(null)
         val screenView: View = decorView.getChildAt(0)
         decorView.removeViewAt(0)
@@ -67,8 +67,8 @@ public object Slider {
  */
 public fun convertActivityFromTranslucent(act: Activity) {
     try {
-        val method = javaClass<Activity>().getDeclaredMethod("convertFromTranslucent")
-        method.setAccessible(true)
+        val method = Activity::class.java.getDeclaredMethod("convertFromTranslucent")
+        method.isAccessible = true
         method.invoke(act)
     } catch (t: Throwable) {
         Log.e("Slider", "Can not call the convertFromTranslucent method of Activity")
@@ -88,15 +88,15 @@ public fun convertActivityToTranslucent(act: Activity) {
  */
 private fun convertActivityToTranslucentBeforeL(act: Activity) {
     try {
-        val classes = javaClass<Activity>().getDeclaredClasses()
+        val classes = Activity::class.java.declaredClasses
         var translucentConversionListenerClazz: Class<*>? = null
         for (clazz in classes) {
-            if (clazz.getSimpleName().contains("TranslucentConversionListener")) {
+            if (clazz.simpleName.contains("TranslucentConversionListener")) {
                 translucentConversionListenerClazz = clazz
             }
         }
-        val method = javaClass<Activity>().getDeclaredMethod("convertToTranslucent", translucentConversionListenerClazz)
-        method.setAccessible(true)
+        val method = Activity::class.java.getDeclaredMethod("convertToTranslucent", translucentConversionListenerClazz)
+        method.isAccessible = true
         method.invoke(act, null)
     } catch (t: Throwable) {
         Log.e("Slider", "Can not call the convertToTranslucent method of Activity")
@@ -109,19 +109,19 @@ private fun convertActivityToTranslucentBeforeL(act: Activity) {
  */
 private fun convertActivityToTranslucentAfterL(act: Activity) {
     try {
-        val getActivityOptions = javaClass<Activity>().getDeclaredMethod("getActivityOptions")
-        getActivityOptions.setAccessible(true)
+        val getActivityOptions = Activity::class.java.getDeclaredMethod("getActivityOptions")
+        getActivityOptions.isAccessible = true
         val options = getActivityOptions.invoke(act)
 
-        val classes = javaClass<Activity>().getDeclaredClasses()
+        val classes = Activity::class.java.declaredClasses
         var translucentConversionListenerClazz: Class<*>? = null
         for (clazz in classes) {
-            if (clazz.getSimpleName().contains("TranslucentConversionListener")) {
+            if (clazz.simpleName.contains("TranslucentConversionListener")) {
                 translucentConversionListenerClazz = clazz
             }
         }
-        val convertToTranslucent = javaClass<Activity>().getDeclaredMethod("convertToTranslucent", translucentConversionListenerClazz, javaClass<ActivityOptions>())
-        convertToTranslucent.setAccessible(true)
+        val convertToTranslucent = Activity::class.java.getDeclaredMethod("convertToTranslucent", translucentConversionListenerClazz, ActivityOptions::class.java)
+        convertToTranslucent.isAccessible = true
         convertToTranslucent.invoke(act, null, options)
     } catch (t: Throwable) {
         Log.e("Slider", "Can not call the convertToTranslucent method of Activity")

@@ -44,17 +44,17 @@ public class SlideLayout(ctx: Context, val slideView: View) : FrameLayout(ctx) {
         }
 
     init {
-        screenWidth = getResources().getDisplayMetrics().widthPixels
+        screenWidth = resources.displayMetrics.widthPixels
         slideHelper = ViewDragHelper.create(this, 1.0f, SlideCallback())
-        slideView.setId(R.id.slide_view)
+        slideView.id = R.id.slide_view
     }
 
     override fun requestLayout(): Unit = if (!inLayout) super.requestLayout()
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         inLayout = true
-        slideView.layout(slideViewLeft, slideViewTop, slideViewLeft + slideView.getMeasuredWidth(),
-                slideViewTop + slideView.getMeasuredHeight())
+        slideView.layout(slideViewLeft, slideViewTop, slideViewLeft + slideView.measuredWidth,
+                slideViewTop + slideView.measuredHeight)
         inLayout = false
     }
 
@@ -93,7 +93,7 @@ public class SlideLayout(ctx: Context, val slideView: View) : FrameLayout(ctx) {
 
     inner class SlideCallback() : ViewDragHelper.Callback() {
         override fun tryCaptureView(child: View, pointerId: Int): Boolean {
-            val ok = child.getId() == R.id.slide_view && slideDelegate.canViewDragged(pointerId)
+            val ok = child.id == R.id.slide_view && slideDelegate.canViewDragged(pointerId)
             if (ok) listener?.onSlideStart()
             return ok
         }
@@ -104,7 +104,7 @@ public class SlideLayout(ctx: Context, val slideView: View) : FrameLayout(ctx) {
 
         override fun getViewHorizontalDragRange(child: View?): Int = screenWidth
 
-        override fun getViewVerticalDragRange(child: View?): Int = slideView.getMeasuredHeight()
+        override fun getViewVerticalDragRange(child: View?): Int = slideView.measuredHeight
 
         override fun onViewDragStateChanged(state: Int) {
             when (state) {
@@ -153,8 +153,8 @@ private abstract class SlideViewImpl(val draggedView: View, val dragHelper: View
     val rect: Rect = Rect()
 
     init {
-        shadow = drawShadow(draggedView.getContext(), edge)
-        shadowWidth = draggedView.getContext().getResources().getDimensionPixelSize(R.dimen.shadow_width)
+        shadow = drawShadow(draggedView.context, edge)
+        shadowWidth = draggedView.context.resources.getDimensionPixelSize(R.dimen.shadow_width)
     }
 }
 
@@ -162,20 +162,20 @@ private class LeftSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper) :
     override fun canViewDragged(pointerId: Int): Boolean = dragHelper.isEdgeTouched(ViewDragHelper.EDGE_LEFT, pointerId)
 
     override fun clampViewPosition(distance: Int, direct: Direction): Int {
-        return if (direct == Direction.Horizontal) Math.max(0, Math.min(distance, draggedView.getMeasuredWidth())) else 0
+        return if (direct == Direction.Horizontal) Math.max(0, Math.min(distance, draggedView.measuredWidth)) else 0
     }
 
     override fun decorateDraggedView(canvas: Canvas) {
         draggedView.getHitRect(rect)
         shadow.setBounds(rect.left - shadowWidth, rect.top,
                 rect.left, rect.bottom)
-        shadow.setAlpha(((1 - scrollPercent) * FULL_ALPHA).toInt())
+        shadow.alpha = ((1 - scrollPercent) * FULL_ALPHA).toInt()
         shadow.draw(canvas)
     }
 
     override fun draggedViewDestination(xvel: Float, yvel: Float): Array<Int> {
-        val left = draggedView.getLeft()
-        val width = draggedView.getMeasuredWidth()
+        val left = draggedView.left
+        val width = draggedView.measuredWidth
         val threshold = width / 2
         val settleLeft: Int
         if (xvel > threshold) {
@@ -185,62 +185,62 @@ private class LeftSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper) :
         } else {
             settleLeft = if (left > threshold) width else 0
         }
-        return arrayOf(settleLeft, draggedView.getTop())
+        return arrayOf(settleLeft, draggedView.top)
     }
 
-    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(left.toFloat() / (draggedView.getWidth() + shadowWidth))
+    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(left.toFloat() / (draggedView.width + shadowWidth))
 }
 
 private class RightSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper) : SlideViewImpl(draggedView, dragHelper, SlideEdge.RIGHT) {
     override fun canViewDragged(pointerId: Int): Boolean = dragHelper.isEdgeTouched(ViewDragHelper.EDGE_RIGHT, pointerId)
 
     override fun clampViewPosition(distance: Int, direct: Direction): Int {
-        return if (direct == Direction.Horizontal) Math.min(0, Math.max(distance, -draggedView.getMeasuredWidth())) else 0
+        return if (direct == Direction.Horizontal) Math.min(0, Math.max(distance, -draggedView.measuredWidth)) else 0
     }
 
     override fun decorateDraggedView(canvas: Canvas) {
         draggedView.getHitRect(rect)
         shadow.setBounds(rect.right, rect.top,
                 rect.right + shadowWidth, rect.bottom)
-        shadow.setAlpha(((1 - scrollPercent) * FULL_ALPHA).toInt())
+        shadow.alpha = ((1 - scrollPercent) * FULL_ALPHA).toInt()
         shadow.draw(canvas)
     }
 
     override fun draggedViewDestination(xvel: Float, yvel: Float): Array<Int> {
-        val left = draggedView.getLeft()
-        val width = draggedView.getMeasuredWidth()
+        val left = draggedView.left
+        val width = draggedView.measuredWidth
         val threshold = width / 2
         val settleLeft = if ((xvel < 0 && Math.abs(xvel) > threshold) || Math.abs(left) > threshold) -width else 0
-        return arrayOf(settleLeft, draggedView.getTop())
+        return arrayOf(settleLeft, draggedView.top)
     }
 
-    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(left.toFloat() / (draggedView.getWidth() + shadowWidth))
+    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(left.toFloat() / (draggedView.width + shadowWidth))
 }
 
 private class TopSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper) : SlideViewImpl(draggedView, dragHelper, SlideEdge.TOP) {
     val statusBarHeight: Int
 
     init {
-        statusBarHeight = getStatusBarHeight(draggedView.getContext())
+        statusBarHeight = getStatusBarHeight(draggedView.context)
     }
 
     override fun canViewDragged(pointerId: Int): Boolean = true
 
     override fun clampViewPosition(distance: Int, direct: Direction): Int {
-        return if (direct == Direction.Vertical) Math.max(0, Math.min(distance, draggedView.getMeasuredHeight())) else 0
+        return if (direct == Direction.Vertical) Math.max(0, Math.min(distance, draggedView.measuredHeight)) else 0
     }
 
     override fun decorateDraggedView(canvas: Canvas) {
         draggedView.getHitRect(rect)
         shadow.setBounds(rect.left, rect.top + statusBarHeight - shadowWidth,
                 rect.right, rect.top + statusBarHeight)
-        shadow.setAlpha(((1 - scrollPercent) * FULL_ALPHA).toInt())
+        shadow.alpha = ((1 - scrollPercent) * FULL_ALPHA).toInt()
         shadow.draw(canvas)
     }
 
     override fun draggedViewDestination(xvel: Float, yvel: Float): Array<Int> {
-        val top = draggedView.getTop()
-        val height = draggedView.getMeasuredHeight()
+        val top = draggedView.top
+        val height = draggedView.measuredHeight
         val threshold = height / 2
         val settleTop: Int
         if (yvel > threshold) {
@@ -250,30 +250,30 @@ private class TopSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper) : 
         } else {
             settleTop = if (top > threshold) height else 0
         }
-        return arrayOf(draggedView.getLeft(), settleTop)
+        return arrayOf(draggedView.left, settleTop)
     }
 
-    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(top.toFloat() / (draggedView.getHeight() + shadowWidth))
+    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(top.toFloat() / (draggedView.height + shadowWidth))
 }
 
 private class BottomSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper) : SlideViewImpl(draggedView, dragHelper, SlideEdge.BOTTOM) {
     override fun canViewDragged(pointerId: Int): Boolean = true
 
     override fun clampViewPosition(distance: Int, direct: Direction): Int {
-        return if (direct == Direction.Vertical) Math.min(0, Math.max(distance, -draggedView.getMeasuredHeight())) else 0
+        return if (direct == Direction.Vertical) Math.min(0, Math.max(distance, -draggedView.measuredHeight)) else 0
     }
 
     override fun decorateDraggedView(canvas: Canvas) {
         draggedView.getHitRect(rect)
         shadow.setBounds(rect.left, rect.bottom,
                 rect.right, rect.bottom + shadowWidth)
-        shadow.setAlpha(((1 - scrollPercent) * FULL_ALPHA).toInt())
+        shadow.alpha = ((1 - scrollPercent) * FULL_ALPHA).toInt()
         shadow.draw(canvas)
     }
 
     override fun draggedViewDestination(xvel: Float, yvel: Float): Array<Int> {
-        val top = draggedView.getTop()
-        val height = draggedView.getMeasuredHeight()
+        val top = draggedView.top
+        val height = draggedView.measuredHeight
         val threshold = height / 2
         val settleTop: Int
         if (Math.abs(yvel) > threshold) {
@@ -283,14 +283,14 @@ private class BottomSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper)
         } else {
             settleTop = if (Math.abs(top) > threshold) height else 0
         }
-        return arrayOf(draggedView.getLeft(), settleTop)
+        return arrayOf(draggedView.left, settleTop)
     }
 
-    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(top.toFloat() / (draggedView.getHeight() + shadowWidth))
+    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(top.toFloat() / (draggedView.height + shadowWidth))
 }
 
 private fun drawShadow(ctx: Context, edge: SlideEdge): Drawable {
-    val res = ctx.getResources()
+    val res = ctx.resources
     val shadow = GradientDrawable()
     shadow.setColors(intArrayOf(
             res.getColor(R.color.start_shadow_color),
@@ -304,12 +304,12 @@ private fun drawShadow(ctx: Context, edge: SlideEdge): Drawable {
         SlideEdge.BOTTOM -> GradientDrawable.Orientation.TOP_BOTTOM
         SlideEdge.NONE -> throw IllegalArgumentException("None has no shadow")
     }
-    shadow.setOrientation(orientation)
+    shadow.orientation = orientation
     return shadow
 }
 
 private fun getStatusBarHeight(ctx: Context): Int {
-    val resource = ctx.getResources().getIdentifier("status_bar_height", "dimen", "android")
-    return if (resource > 0) ctx.getResources().getDimensionPixelSize(resource) else throw RuntimeException("Can not get the status bar on the platform.")
+    val resource = ctx.resources.getIdentifier("status_bar_height", "dimen", "android")
+    return if (resource > 0) ctx.resources.getDimensionPixelSize(resource) else throw RuntimeException("Can not get the status bar on the platform.")
 }
 

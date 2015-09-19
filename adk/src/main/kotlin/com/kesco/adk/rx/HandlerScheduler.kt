@@ -19,12 +19,12 @@ public class HandlerScheduler(val handler: Handler) : Scheduler() {
 
         override fun unsubscribe() = subscriptions.unsubscribe()
 
-        override fun isUnsubscribed(): Boolean = subscriptions.isUnsubscribed()
+        override fun isUnsubscribed(): Boolean = subscriptions.isUnsubscribed
 
         override fun schedule(action: Action0): Subscription = schedule(action, 0L, TimeUnit.MILLISECONDS)
 
         override fun schedule(action: Action0, delayTime: Long, unit: TimeUnit): Subscription {
-            if (subscriptions.isUnsubscribed()) {
+            if (subscriptions.isUnsubscribed) {
                 return Subscriptions.unsubscribed()
             }
             val scheduledAction = ScheduledAction(action)
