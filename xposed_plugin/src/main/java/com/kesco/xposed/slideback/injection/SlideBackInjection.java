@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.ArraySet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -19,18 +20,25 @@ import com.kesco.adk.moko.slideback.SlidebackPackage;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
+
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
-
     private static String modPath;
+
+    private XSharedPreferences pref = null;
+
+    public SlideBackInjection() {
+    }
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -39,9 +47,18 @@ public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoa
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (!lpparam.packageName.equals("com.kesco.demo.imsi")) {
+        XposedBridge.log("Haha " + lpparam.packageName);
+        if (lpparam.packageName.equals("com.kesco.demo.imsi")) {
+            loadSlideAppStrList();
+        } else {
             return;
         }
+        boolean fit = false;
+        for (String app : loadSlideAppStrList()) {
+            if (fit = lpparam.packageName.equals(app)) break;
+        }
+        if (!fit) return;
+        XposedBridge.log("Start");
         XposedHelpers.findAndHookMethod("android.support.v7.app.AppCompatActivity", lpparam.classLoader, "setContentView", "int", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -114,5 +131,21 @@ public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoa
             }
         });
         SlidebackPackage.convertActivityFromTranslucent(act);
+    }
+
+    private Set<String> loadSlideAppStrList() {
+        Set<String> setx = getPref().getStringSet("slide_app_list", new ArraySet<String>());
+        XposedBridge.log("Hani " + setx.size());
+        return setx;
+    }
+
+    private XSharedPreferences getPref() {
+        if (pref == null) {
+            pref = new XSharedPreferences("com.kesco.xposed.slideback", "app_settings");
+            pref.makeWorldReadable();
+        } else {
+            pref.reload();
+        }
+        return pref;
     }
 }
