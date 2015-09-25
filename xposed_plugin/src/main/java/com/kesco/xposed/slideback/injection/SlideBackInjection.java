@@ -36,6 +36,9 @@ public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoa
     private static final String FILTER_PREFIX_ANDROID = "android";
     private static final String FILTER_PREFIX_COM_ANDROID = "com.android";
 
+    private static final String STR_ACTIVITY = "android.app.Activity";
+    private static final String STR_APPCOMPAT = "android.support.v7.app.AppCompatActivity";
+
     private static String modPath;
 
     private XSharedPreferences pref = null;
@@ -53,19 +56,22 @@ public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoa
         if (filterSystemApp(lpparam.packageName) || !filterSlideApp(lpparam.packageName)) {
             return;
         }
-        XposedHelpers.findAndHookMethod("android.support.v7.app.AppCompatActivity", lpparam.classLoader, "setContentView", "int", new XC_MethodHook() {
+
+        Class actClazz;
+        try {
+            actClazz = XposedHelpers.findClass(STR_APPCOMPAT, lpparam.classLoader);
+        } catch (XposedHelpers.ClassNotFoundError e) {
+            actClazz = null;
+        }
+        String actName = actClazz == null ? STR_ACTIVITY : STR_APPCOMPAT;
+
+        XposedHelpers.findAndHookMethod(actName, lpparam.classLoader, "setContentView", "int", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 attachSlideLayout((Activity) param.thisObject);
             }
         });
-        XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "setContentView", "int", new XC_MethodHook() {
-            @Override
-            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                attachSlideLayout((Activity) param.thisObject);
-            }
-        });
-        XposedHelpers.findAndHookMethod("android.app.Activity", lpparam.classLoader, "onPostCreate", Bundle.class, new XC_MethodHook() {
+        XposedHelpers.findAndHookMethod(actName, lpparam.classLoader, "onPostCreate", Bundle.class, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Activity act = (Activity) param.thisObject;
@@ -76,7 +82,7 @@ public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoa
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resparam) throws Throwable {
-        if (!resparam.packageName.equals("com.kesco.demo.imsi")) {
+        if (filterSystemApp(resparam.packageName) || !filterSlideApp(resparam.packageName)) {
             return;
         }
         XResources res = resparam.res;
