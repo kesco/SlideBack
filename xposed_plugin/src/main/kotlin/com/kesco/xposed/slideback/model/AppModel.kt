@@ -4,14 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.util.ArraySet
-import android.util.Log
 import com.kesco.xposed.slideback.domain.AppInfo
 import com.kesco.xposed.slideback.domain.genAppInfo
 import rx.Observable
 import rx.Subscriber
 import rx.observers.Subscribers
-import java.lang
 import java.util.*
 
 interface AppModel {
@@ -20,7 +17,7 @@ interface AppModel {
 }
 
 class AppModelImpl(val ctx: Context) : AppModel {
-    val apps: MutableList<AppInfo> = ArrayList<AppInfo>()
+    val apps: MutableList<AppInfo> = ArrayList()
 
     override fun data(): Observable<List<AppInfo>> {
         return Observable.create { subscriber ->
@@ -50,7 +47,7 @@ class AppModelImpl(val ctx: Context) : AppModel {
 
     private fun loadPref(): SharedPreferences = ctx.getSharedPreferences("app_settings", Context.MODE_WORLD_READABLE)
 
-    private fun loadSlideAppsList(): MutableSet<String> = loadPref().getStringSet("slide_app_list", ArraySet<String>())
+    private fun loadSlideAppsList(): MutableSet<String> = loadPref().getStringSet("slide_app_list", HashSet<String>())
 
     private fun insertSlideAppsList(list: Set<String>) {
         val editor = loadPref().edit()

@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.ArraySet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -20,6 +19,7 @@ import com.kesco.adk.moko.slideback.SlidebackPackage;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -33,6 +33,9 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
+    private static final String FILTER_PREFIX_ANDROID = "android";
+    private static final String FILTER_PREFIX_COM_ANDROID = "com.android";
+
     private static String modPath;
 
     private XSharedPreferences pref = null;
@@ -47,18 +50,9 @@ public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoa
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        XposedBridge.log("Haha " + lpparam.packageName);
-        if (lpparam.packageName.equals("com.kesco.demo.imsi")) {
-            loadSlideAppStrList();
-        } else {
+        if (filterSystemApp(lpparam.packageName) || !filterSlideApp(lpparam.packageName)) {
             return;
         }
-        boolean fit = false;
-        for (String app : loadSlideAppStrList()) {
-            if (fit = lpparam.packageName.equals(app)) break;
-        }
-        if (!fit) return;
-        XposedBridge.log("Start");
         XposedHelpers.findAndHookMethod("android.support.v7.app.AppCompatActivity", lpparam.classLoader, "setContentView", "int", new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
@@ -134,9 +128,7 @@ public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoa
     }
 
     private Set<String> loadSlideAppStrList() {
-        Set<String> setx = getPref().getStringSet("slide_app_list", new ArraySet<String>());
-        XposedBridge.log("Hani " + setx.size());
-        return setx;
+        return getPref().getStringSet("slide_app_list", new HashSet<String>());
     }
 
     private XSharedPreferences getPref() {
@@ -147,5 +139,26 @@ public class SlideBackInjection implements IXposedHookZygoteInit, IXposedHookLoa
             pref.reload();
         }
         return pref;
+    }
+
+    private boolean filterSystemApp(String app) {
+        boolean ret = false;
+        String subStr;
+        if (app.length() >= FILTER_PREFIX_ANDROID.length()) {
+            subStr = app.substring(0, FILTER_PREFIX_ANDROID.length());
+            ret = subStr.equals(FILTER_PREFIX_ANDROID);
+        } else if (app.length() >= FILTER_PREFIX_COM_ANDROID.length()) {
+            subStr = app.substring(0, FILTER_PREFIX_COM_ANDROID.length());
+            ret = subStr.equals(FILTER_PREFIX_COM_ANDROID);
+        }
+        return ret;
+    }
+
+    private boolean filterSlideApp(String app) {
+        boolean ret = false;
+        for (String item : loadSlideAppStrList()) {
+            if (ret = app.equals(item)) break;
+        }
+        return ret;
     }
 }
