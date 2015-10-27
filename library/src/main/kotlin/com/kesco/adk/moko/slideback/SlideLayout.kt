@@ -1,13 +1,13 @@
 package com.kesco.adk.moko.slideback
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.support.v4.view.ViewCompat
 import android.support.v4.widget.ViewDragHelper
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
@@ -49,7 +49,9 @@ public class SlideLayout(ctx: Context, val slideView: View) : FrameLayout(ctx) {
         slideView.id = R.id.slide_view
     }
 
-    override fun requestLayout(): Unit = if (!inLayout) super.requestLayout()
+    override fun requestLayout(): Unit {
+        if (!inLayout) super.requestLayout()
+    }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         inLayout = true
@@ -312,4 +314,6 @@ private fun getStatusBarHeight(ctx: Context): Int {
     val resource = ctx.resources.getIdentifier("status_bar_height", "dimen", "android")
     return if (resource > 0) ctx.resources.getDimensionPixelSize(resource) else throw RuntimeException("Can not get the status bar on the platform.")
 }
+
+private fun Resources.getColor(id: Int) = getColor(id, null)
 
