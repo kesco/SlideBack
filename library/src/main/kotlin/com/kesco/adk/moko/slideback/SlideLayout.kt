@@ -309,7 +309,7 @@ private fun drawShadow(ctx: Context, edge: SlideEdge): Drawable {
         SlideEdge.LEFT -> GradientDrawable.Orientation.LEFT_RIGHT
         SlideEdge.RIGHT -> GradientDrawable.Orientation.RIGHT_LEFT
         SlideEdge.TOP -> GradientDrawable.Orientation.TOP_BOTTOM
-        SlideEdge.BOTTOM -> GradientDrawable.Orientation.TOP_BOTTOM
+        SlideEdge.BOTTOM -> GradientDrawable.Orientation.BOTTOM_TOP
         SlideEdge.NONE -> throw IllegalArgumentException("None has no shadow")
     }
     shadow.orientation = orientation
