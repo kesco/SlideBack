@@ -2,6 +2,7 @@ package com.kesco.adk.moko.slideback
 
 import android.app.Activity
 import android.app.ActivityOptions
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.util.Log
@@ -37,6 +38,7 @@ public object Slider {
 
             override fun onSlide(percent: Float, state: SlideState) {
                 Log.d("on Slide", "$percent : ${state.toString()}")
+
             }
 
             override fun onSlideFinish() {
@@ -48,9 +50,9 @@ public object Slider {
     }
 
     public fun attachToScreen(act: Activity, edge: SlideEdge, l: SlideListener) {
-        act.window.setBackgroundDrawable(ColorDrawable(0))
+        act.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val decorView: ViewGroup = act.window.decorView as ViewGroup
-        decorView.setBackgroundDrawable(null)
+        decorView.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val screenView: View = decorView.getChildAt(0)
         decorView.removeViewAt(0)
         val slideLayout: SlideLayout = SlideLayout(act, screenView)
