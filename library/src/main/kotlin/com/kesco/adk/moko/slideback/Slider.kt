@@ -18,7 +18,7 @@ import android.view.ViewGroup
 public object Slider {
 
     public fun attachToScreen(act: Activity) {
-        attachToScreen(act, SlideEdge.LEFT, object : SlideListener {
+        attachToScreen(act, SlideEdge.LEFT, SlideShadow.EDGE, object : SlideListener {
             override fun onSlideStart() {
                 Log.e("on Slide", "${act.toString()} Start")
                 convertActivityToTranslucent(act)
@@ -36,8 +36,8 @@ public object Slider {
         })
     }
 
-    public fun attachToScreen(act: Activity, edge: SlideEdge) {
-        attachToScreen(act, edge, object : SlideListener {
+    public fun attachToScreen(act: Activity, edge: SlideEdge, shadow: SlideShadow) {
+        attachToScreen(act, edge, shadow, object : SlideListener {
             override fun onSlideStart() {
                 Log.e("on Slide", "${act.toString()} Start")
                 convertActivityToTranslucent(act)
@@ -56,13 +56,13 @@ public object Slider {
         })
     }
 
-    public fun attachToScreen(act: Activity, edge: SlideEdge, l: SlideListener) {
+    public fun attachToScreen(act: Activity, edge: SlideEdge, slideShadow: SlideShadow, l: SlideListener) {
         act.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val decorView: ViewGroup = act.window.decorView as ViewGroup
         decorView.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val screenView: View = decorView.getChildAt(0)
         decorView.removeViewAt(0)
-        val slideLayout: SlideLayout = SlideLayout(act, screenView)
+        val slideLayout: SlideLayout = SlideLayout(act, screenView, slideShadow)
         slideLayout.addView(screenView)
         decorView.addView(slideLayout, 0)
         convertActivityFromTranslucent(act)
