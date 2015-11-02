@@ -8,6 +8,10 @@
 ```java
 Slider.INSTANCE$.attachToScreen(this, edge, SlideShadow.FULL);
 ```
+或者
+```java
+Slider.INSTANCE$.attachToScreen(this);
+```
 
 2.同时你的Activity对应的`Theme`需要具有下面的属性
 ```
