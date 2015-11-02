@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.kesco.adk.moko.slideback.Slider;
+
 /**
  * Created by kesco on 15/7/24.
  */

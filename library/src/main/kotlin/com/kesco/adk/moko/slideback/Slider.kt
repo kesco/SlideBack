@@ -2,14 +2,21 @@ package com.kesco.adk.moko.slideback
 
 import android.app.Activity
 import android.app.ActivityOptions
+import android.app.PendingIntent
+import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Rect
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 
 public object Slider {
+
     public fun attachToScreen(act: Activity) {
         attachToScreen(act, SlideEdge.LEFT, object : SlideListener {
             override fun onSlideStart() {

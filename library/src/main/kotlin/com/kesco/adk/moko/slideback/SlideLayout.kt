@@ -156,7 +156,8 @@ private abstract class SlideViewImpl(val draggedView: View, val dragHelper: View
 
     init {
         shadow = drawShadow(draggedView.context, edge)
-        shadowWidth = draggedView.context.resources.getDimensionPixelSize(R.dimen.shadow_width)
+//        shadowWidth = draggedView.context.resources.getDimensionPixelSize(R.dimen.shadow_width)
+        shadowWidth = draggedView.resources.displayMetrics.widthPixels
     }
 }
 
@@ -190,7 +191,7 @@ private class LeftSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper) :
         return arrayOf(settleLeft, draggedView.top)
     }
 
-    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(left.toFloat() / (draggedView.width + shadowWidth))
+    override fun draggedPercent(left: Int, top: Int): Float = Math.abs(left.toFloat() / (draggedView.width))
 }
 
 private class RightSlideViewImpl(draggedView: View, dragHelper: ViewDragHelper) : SlideViewImpl(draggedView, dragHelper, SlideEdge.RIGHT) {
