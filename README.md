@@ -23,5 +23,8 @@ Slider.INSTANCE$.attachToScreen(this);
 
 # Members
 
-[Kesco](https://github.com/kesco)
-[Troy](https://github.com/troytang)
+| 成员                                 | Github                     | 
+| ----------------------------------- |:---------------------------:| 
+| [Kesco](https://github.com/kesco)   | https://github.com/kesco    | 
+| [Troy](https://github.com/troytang) | https://github.com/troytang |   
+
