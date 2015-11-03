@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.kesco.adk.moko.slideback.SlideEdge;
+import com.kesco.adk.moko.slideback.SlideShadow;
 import com.kesco.adk.moko.slideback.Slider;
 
 public class CommonSlideActivity extends AppCompatActivity implements View.OnClickListener {
@@ -38,7 +39,7 @@ public class CommonSlideActivity extends AppCompatActivity implements View.OnCli
                 break;
         }
 
-        Slider.INSTANCE$.attachToScreen(this, edge);
+        Slider.INSTANCE$.attachToScreen(this, edge, SlideShadow.FULL);
 
         findViewById(R.id.btn_left_slide).setOnClickListener(this);
         findViewById(R.id.btn_right_slide).setOnClickListener(this);

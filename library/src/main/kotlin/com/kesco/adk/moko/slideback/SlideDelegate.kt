@@ -12,6 +12,10 @@ public enum class SlideEdge {
     LEFT, TOP, RIGHT, BOTTOM, NONE
 }
 
+public enum class SlideShadow {
+    EDGE, FULL
+}
+
 public enum class SlideState {
     DRAGGING, IDLE, SETTLING
 }
