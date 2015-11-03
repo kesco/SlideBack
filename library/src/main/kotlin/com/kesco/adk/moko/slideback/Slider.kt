@@ -57,17 +57,19 @@ public object Slider {
     }
 
     public fun attachToScreen(act: Activity, edge: SlideEdge, slideShadow: SlideShadow, l: SlideListener) {
-        act.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val decorView: ViewGroup = act.window.decorView as ViewGroup
+        val bg : Drawable = decorView.background
+        act.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         decorView.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val screenView: View = decorView.getChildAt(0)
         decorView.removeViewAt(0)
         val slideLayout: SlideLayout = SlideLayout(act, screenView, slideShadow)
+        screenView.background = bg;
         slideLayout.addView(screenView)
         decorView.addView(slideLayout, 0)
-        convertActivityFromTranslucent(act)
         slideLayout.slideEdge = edge
         slideLayout.listener = l
+        convertActivityFromTranslucent(act)
     }
 }
 
