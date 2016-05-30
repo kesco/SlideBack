@@ -2,12 +2,7 @@ package com.kesco.adk.moko.slideback
 
 import android.app.Activity
 import android.app.ActivityOptions
-import android.app.PendingIntent
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Rect
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -15,9 +10,9 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 
-public object Slider {
+object Slider {
 
-    public fun attachToScreen(act: Activity) {
+    fun attachToScreen(act: Activity) {
         attachToScreen(act, SlideEdge.LEFT, SlideShadow.EDGE, object : SlideListener {
             override fun onSlideStart() {
                 Log.e("on Slide", "${act.toString()} Start")
@@ -36,7 +31,7 @@ public object Slider {
         })
     }
 
-    public fun attachToScreen(act: Activity, edge: SlideEdge, shadow: SlideShadow) {
+    fun attachToScreen(act: Activity, edge: SlideEdge, shadow: SlideShadow) {
         attachToScreen(act, edge, shadow, object : SlideListener {
             override fun onSlideStart() {
                 Log.e("on Slide", "${act.toString()} Start")
@@ -56,9 +51,9 @@ public object Slider {
         })
     }
 
-    public fun attachToScreen(act: Activity, edge: SlideEdge, slideShadow: SlideShadow, l: SlideListener) {
+    fun attachToScreen(act: Activity, edge: SlideEdge, slideShadow: SlideShadow, l: SlideListener) {
         val decorView: ViewGroup = act.window.decorView as ViewGroup
-        val bg : Drawable = decorView.background
+        val bg: Drawable = decorView.background
         act.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         decorView.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val screenView: View = decorView.getChildAt(0)
@@ -76,7 +71,7 @@ public object Slider {
 /**
  * 参考SwipbackLayout的实现
  */
-public fun convertActivityFromTranslucent(act: Activity) {
+fun convertActivityFromTranslucent(act: Activity) {
     try {
         val method = Activity::class.java.getDeclaredMethod("convertFromTranslucent")
         method.isAccessible = true
@@ -86,7 +81,7 @@ public fun convertActivityFromTranslucent(act: Activity) {
     }
 }
 
-public fun convertActivityToTranslucent(act: Activity) {
+fun convertActivityToTranslucent(act: Activity) {
     if (Build.VERSION.SDK_INT >= 21 /* Build.VERSION_CODES.LOLLIPOP */) {
         convertActivityToTranslucentAfterL(act)
     } else {

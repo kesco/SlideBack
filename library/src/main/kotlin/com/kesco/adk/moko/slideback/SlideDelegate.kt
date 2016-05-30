@@ -2,29 +2,29 @@ package com.kesco.adk.moko.slideback
 
 import android.graphics.Canvas
 
-public interface SlideListener {
+interface SlideListener {
     fun onSlideStart()
     fun onSlide(percent: Float, state: SlideState)
     fun onSlideFinish()
 }
 
-public enum class SlideEdge {
+enum class SlideEdge {
     LEFT, TOP, RIGHT, BOTTOM, NONE
 }
 
-public enum class SlideShadow {
+enum class SlideShadow {
     EDGE, FULL
 }
 
-public enum class SlideState {
+enum class SlideState {
     DRAGGING, IDLE, SETTLING
 }
 
-enum class Direction {
+internal enum class Direction {
     Horizontal, Vertical
 }
 
-interface SlideViewDelegate {
+internal interface SlideViewDelegate {
     fun canViewDragged(pointerId: Int): Boolean
     fun clampViewPosition(distance: Int, direct: Direction): Int
     fun decorateDraggedView(canvas: Canvas)

@@ -17,7 +17,7 @@ private val FULL_ALPHA: Int = 255
 /**
  * 底层滑动的Layout
  */
-public class SlideLayout(ctx: Context, val slideView: View, shadow: SlideShadow) : FrameLayout(ctx) {
+class SlideLayout(ctx: Context, val slideView: View, shadow: SlideShadow) : FrameLayout(ctx) {
     private val screenWidth: Int
     private val slideHelper: ViewDragHelper;
 
@@ -33,7 +33,7 @@ public class SlideLayout(ctx: Context, val slideView: View, shadow: SlideShadow)
     var listener: SlideListener? = null
     var slideShadow: SlideShadow = shadow
     var slideEdge: SlideEdge = SlideEdge.NONE
-        public set(value) {
+        set(value) {
             when (value) {
                 SlideEdge.NONE -> slideDelegate = NoneSlideViewImpl()
                 SlideEdge.LEFT -> slideDelegate = LeftSlideViewImpl(slideView, slideHelper, slideShadow)
@@ -157,11 +157,11 @@ private abstract class SlideViewImpl(val draggedView: View, val dragHelper: View
     init {
         shadow = drawShadow(draggedView.context, edge)
         shadowWidth = if (slideShadow == SlideShadow.EDGE) draggedView.context.resources.getDimensionPixelSize(R.dimen.shadow_width) else {
-           when (edge) {
-               SlideEdge.LEFT, SlideEdge.RIGHT -> draggedView.resources.displayMetrics.widthPixels
-               SlideEdge.TOP, SlideEdge.BOTTOM -> draggedView.resources.displayMetrics.heightPixels
-               else -> draggedView.resources.displayMetrics.widthPixels
-           }
+            when (edge) {
+                SlideEdge.LEFT, SlideEdge.RIGHT -> draggedView.resources.displayMetrics.widthPixels
+                SlideEdge.TOP, SlideEdge.BOTTOM -> draggedView.resources.displayMetrics.heightPixels
+                else -> draggedView.resources.displayMetrics.widthPixels
+            }
         }
     }
 }
