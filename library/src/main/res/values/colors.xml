@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="start_shadow_color">#00000000</color>
-    <color name="center_shadow_color">#11000000</color>
-    <color name="end_shadow_color">#33000000</color>
+  <color name="start_shadow_color">#00000000</color>
+  <color name="center_shadow_color">#11000000</color>
+  <color name="end_shadow_color">#33000000</color>
 </resources>
