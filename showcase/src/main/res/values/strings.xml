@@ -1,4 +1,5 @@
 <resources>
   <string name="app_name">SlideBack Demo</string>
   <string name="create_new_activity">Create an new activity</string>
+  <string name="create_an_new_container_activity">Create an new container activity</string>
 </resources>

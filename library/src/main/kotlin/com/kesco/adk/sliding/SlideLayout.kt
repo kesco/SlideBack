@@ -80,7 +80,6 @@ class SlideLayout(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : F
   private var _vTarget: View? = null
   private var _edge: SlideEdge
   private var _inLayout = false
-  private var _screenWidth: Int
   private var _slideViewLeft = 0
   private var _slideViewTop = 0
   private var _slideState = SlideState.IDLE
@@ -140,7 +139,6 @@ class SlideLayout(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : F
     _shadow = val2Shadow(typeArray.getInt(R.styleable.SlideLayout_slide_shadow, -1))
     typeArray.recycle()
 
-    _screenWidth = resources.displayMetrics.widthPixels
     _slideHelper = ViewDragHelper.create(this, 1.0f, SlideCallBack())
   }
 
@@ -237,7 +235,7 @@ class SlideLayout(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : F
       }
     }
 
-    override fun getViewHorizontalDragRange(child: View?): Int = _screenWidth
+    override fun getViewHorizontalDragRange(child: View?): Int = measuredWidth
 
     override fun onViewDragStateChanged(state: Int) {
       _slideState = when (state) {

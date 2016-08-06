@@ -7,6 +7,7 @@ import android.widget.Button
 
 class MainActivity : AppCompatActivity() {
   private lateinit var _btnNew: Button;
+  private lateinit var _btnNewContainer: Button
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -15,6 +16,10 @@ class MainActivity : AppCompatActivity() {
     _btnNew.setOnClickListener {
       val intent = Intent(this, DirectAttachActivity::class.java)
       startActivity(intent)
+    }
+    _btnNewContainer = findViewById(R.id.btn_create_container) as Button
+    _btnNewContainer.setOnClickListener {
+
     }
   }
 }
