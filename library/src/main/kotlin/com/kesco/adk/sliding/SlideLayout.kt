@@ -72,7 +72,7 @@ private fun _drawShadow(ctx: Context, edge: SlideEdge): Drawable {
   return shadow
 }
 
-private val FULL_ALPHA: Int = 255
+private val SHADOW_COVER_COLOR = 0x99000000
 private val TAG = "Slider"
 
 class SlideLayout(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : FrameLayout(context, attrs, defStyleAttr) {
@@ -94,18 +94,13 @@ class SlideLayout(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : F
     set(value) {
       _edge = value
       _shadowDrawable = if (value == SlideEdge.NONE) null else _drawShadow(context, value)
-      _shadowWidth = if (_shadow == SlideShadow.EDGE) context.resources.getDimensionPixelSize(R.dimen.shadow_width) else {
-        when (edge) {
-          SlideEdge.LEFT, SlideEdge.RIGHT -> resources.displayMetrics.widthPixels
-          else -> 0
-        }
-      }
     }
     get() = _edge
 
   var shadow: SlideShadow
     set(value) {
       _shadow = value
+      _shadowWidth = if (_shadow == SlideShadow.EDGE) context.resources.getDimensionPixelSize(R.dimen.shadow_width) else 0
     }
     get() = _shadow
 
@@ -168,25 +163,52 @@ class SlideLayout(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : F
   override fun drawChild(canvas: Canvas?, child: View?, drawingTime: Long): Boolean {
     val ret = super.drawChild(canvas, child, drawingTime)
     _ensureTarget()
+    _drawShadow(canvas)
+    _drawCover(canvas)
+    return ret
+  }
+
+  private fun _drawShadow(canvas: Canvas?) {
     if (_vTarget != null) {
-      when (_edge) {
+      when(_edge) {
         SlideEdge.LEFT -> {
           _vTarget?.getHitRect(_shadowRect)
           _shadowDrawable?.setBounds(_shadowRect.left - _shadowWidth, _shadowRect.top,
               _shadowRect.left, _shadowRect.bottom)
-          _shadowDrawable?.alpha = ((1 - _slidePercent) * FULL_ALPHA).toInt()
           _shadowDrawable?.draw(canvas)
         }
         SlideEdge.RIGHT -> {
           _vTarget?.getHitRect(_shadowRect)
           _shadowDrawable?.setBounds(_shadowRect.right, _shadowRect.top,
               _shadowRect.right + _shadowWidth, _shadowRect.bottom)
-          _shadowDrawable?.alpha = ((1 - _slidePercent) * FULL_ALPHA).toInt()
           _shadowDrawable?.draw(canvas)
+        }
+        SlideEdge.NONE -> {
+          /* Do nothing. */
         }
       }
     }
-    return ret
+  }
+
+  private fun _drawCover(canvas: Canvas?) {
+    val baseAlpha = (SHADOW_COVER_COLOR and 0xff000000).ushr(24)
+    val alpha = (baseAlpha * (1 - _slidePercent)).toInt()
+    val color = alpha.shl(24) or (SHADOW_COVER_COLOR and 0xffffff).toInt()
+    if (_vTarget != null) {
+      when (_edge) {
+        SlideEdge.LEFT -> {
+          canvas?.clipRect(0, 0, _vTarget!!.left, height)
+          canvas?.drawColor(color)
+        }
+        SlideEdge.RIGHT -> {
+          canvas?.clipRect(_vTarget!!.right, 0, right, height)
+          canvas?.drawColor(color)
+        }
+        SlideEdge.NONE -> {
+          /* Do nothing. */
+        }
+      }
+    }
   }
 
   override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
@@ -261,6 +283,9 @@ class SlideLayout(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : F
           }
           SlideEdge.RIGHT -> {
             _slidePercent = Math.abs(left.toFloat() / (width))
+          }
+          SlideEdge.NONE -> {
+            /* Do nothing. */
           }
         }
       }
