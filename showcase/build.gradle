@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    compileSdkVersion android_version
+    buildToolsVersion build_tool_version
 
     defaultConfig {
         applicationId "com.kesco.adk.sliding.demo"
-        minSdkVersion 16
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion android_min_version
+        targetSdkVersion android_version
+        versionCode version_code
+        versionName version_name
     }
     buildTypes {
         release {

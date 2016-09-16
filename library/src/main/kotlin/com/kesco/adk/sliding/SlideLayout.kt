@@ -57,7 +57,7 @@ internal fun val2Shadow(type: Int): SlideShadow {
 
 private fun _getColorCompat(res: Resources, id: Int) = if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) res.getColor(id, null) else res.getColor(id)
 
-private fun _drawShadow(ctx: Context, edge: SlideEdge): Drawable {
+private fun _drawShadowDrawable(ctx: Context, edge: SlideEdge): Drawable {
   val shadow = GradientDrawable()
   shadow.colors = intArrayOf(
       _getColorCompat(ctx.resources, R.color.start_shadow_color),
@@ -93,14 +93,14 @@ class SlideLayout(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : F
   var edge: SlideEdge
     set(value) {
       _edge = value
-      _shadowDrawable = if (value == SlideEdge.NONE) null else _drawShadow(context, value)
+      _shadowDrawable = if (value == SlideEdge.NONE) null else _drawShadowDrawable(context, value)
     }
     get() = _edge
 
   var shadow: SlideShadow
     set(value) {
       _shadow = value
-      _shadowWidth = if (_shadow == SlideShadow.EDGE) context.resources.getDimensionPixelSize(R.dimen.shadow_width) else 0
+      _shadowWidth = if (_shadow != SlideShadow.NONE) context.resources.getDimensionPixelSize(R.dimen.shadow_width) else 0
     }
     get() = _shadow
 
@@ -163,14 +163,14 @@ class SlideLayout(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : F
   override fun drawChild(canvas: Canvas?, child: View?, drawingTime: Long): Boolean {
     val ret = super.drawChild(canvas, child, drawingTime)
     _ensureTarget()
-    _drawShadow(canvas)
-    _drawCover(canvas)
+    if (_shadow == SlideShadow.FULL) _drawCover(canvas)
+    if (_shadow != SlideShadow.NONE) _drawShadow(canvas)
     return ret
   }
 
   private fun _drawShadow(canvas: Canvas?) {
     if (_vTarget != null) {
-      when(_edge) {
+      when (_edge) {
         SlideEdge.LEFT -> {
           _vTarget?.getHitRect(_shadowRect)
           _shadowDrawable?.setBounds(_shadowRect.left - _shadowWidth, _shadowRect.top,
@@ -392,7 +392,7 @@ object Slider {
     val decorView: ViewGroup = act.window.decorView as ViewGroup
     val bg: Drawable = decorView.background
     act.window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-    decorView.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    decorView.background = ColorDrawable(Color.TRANSPARENT)
     val screenView: View = decorView.getChildAt(0)
     decorView.removeViewAt(0)
     val slideLayout: SlideLayout = SlideLayout(act)
@@ -400,13 +400,13 @@ object Slider {
     slideLayout.addView(screenView)
     decorView.addView(slideLayout, 0)
     slideLayout.edge = edge
-    slideLayout.listener = l
     slideLayout.shadow = shadow
+    slideLayout.listener = l
     convertActivityFromTranslucent(act)
   }
 
-  fun attachToScreen(act: Activity, edge: SlideEdge) {
-    attachToScreen(act, edge, SlideShadow.EDGE, object : SlideListener {
+  fun attachToScreen(act: Activity, edge: SlideEdge, shadow: SlideShadow) {
+    attachToScreen(act, edge, shadow, object : SlideListener {
       override fun onSlideStart() {
         Log.d(TAG, "Sliding: ${act.toString()} Start")
         convertActivityToTranslucent(act)
@@ -423,5 +423,9 @@ object Slider {
         act.overridePendingTransition(0, 0)
       }
     })
+  }
+
+  fun attachToScreen(act: Activity, edge: SlideEdge) {
+    attachToScreen(act, edge, SlideShadow.FULL)
   }
 }

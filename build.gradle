@@ -1,6 +1,11 @@
 buildscript {
     ext.kotlin_version = '1.0.3'
-    ext.android_support_version = '24.1.1'
+    ext.android_version = 24
+    ext.android_min_version = 16
+    ext.android_support_version = '24.2.1'
+    ext.build_tool_version = '24.0.1'
+    ext.version_code = 1
+    ext.version_name = '0.10'
     repositories {
         jcenter()
     }
