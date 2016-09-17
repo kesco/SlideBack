@@ -19,7 +19,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import com.kesco.adk.moko.slideback.R
 
 interface SlideListener {
   fun onSlideStart()
