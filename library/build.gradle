@@ -1,6 +1,10 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
+apply plugin: 'com.github.dcendents.android-maven'
+
+group='com.github.kesco'
+
 android {
     compileSdkVersion android_version
     buildToolsVersion build_tool_version
@@ -26,5 +30,34 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile "com.android.support:appcompat-v7:$android_support_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+/* Encoding */
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+/* Packing source code */
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError  false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+/* Packing javadoc */
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 
